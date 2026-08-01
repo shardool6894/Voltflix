@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voltfix — Find &amp; report EV charging problems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a href="#top" class="logo">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13 2 L4 14 H11 L9 22 L20 8 H13 L13 2 Z" fill="currentColor" />
+          </svg>
+        </span>
+        Voltfix
+      </a>
+
+      <nav class="main-nav" id="main-nav">
+        <a href="#stations">Find chargers</a>
+        <a href="#how">How it works</a>
+        <a href="#report">Report an issue</a>
+        <a href="#feed">Recent reports</a>
+        <div id="auth-nav-box">
+          <a href="auth.html" class="sign-in-btn" id="nav-auth-link" style="color: var(--accent-volt);">Sign In</a>
+        </div>
+      </nav>
+
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav"
+        aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">Live network status</p>
+          <h1>Broken chargers shouldn't ruin your trip.</h1>
+          <p class="hero-sub">Find working stations near you, and report the ones that aren't — in under a minute. Every
+            report helps the next driver avoid a dead charger.</p>
+
+          <form class="hero-search" id="hero-search" novalidate>
+            <label for="location-input" class="sr-only">Enter a location</label>
+            <input type="text" id="location-input" placeholder="Enter a city, zip, or address" autocomplete="off">
+            <button type="submit" class="btn btn-primary" id="chargerBtn">Find chargers</button>
+          </form>
+          <a href="#report" class="hero-secondary-link">Or report a problem you just ran into →</a>
+        </div>
+
+        <div class="panel" aria-label="Network status readout">
+          <div class="panel-row">
+            <span class="panel-value" id="stat-tracked">loading....</span>
+            <span class="panel-label">stations tracked</span>
+          </div>
+          <div class="panel-row">
+            <!-- FIXED ID HERE: Changed from stat-today to stat-reported -->
+            <span class="panel-value panel-value--fault" id="stat-reported">loading....</span>
+            <span class="panel-label">reported today</span>
+          </div>
+          <div class="panel-row">
+            <span class="panel-value panel-value--live" id="stat-fixed">loading....</span>
+            <span class="panel-label">fixed this week</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATION LIST -->
+    <section class="stations" id="stations">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Stations near you</h2>
+          <p class="section-sub">Status is a mix of live network data and driver reports.</p>
+        </div>
+
+        <div class="filter-chips" id="filter-chips" role="group" aria-label="Filter stations by status">
+          <button class="chip is-active" data-filter="all">All</button>
+          <button class="chip" data-filter="available">Available</button>
+          <button class="chip" data-filter="in-use">In use</button>
+          <button class="chip" data-filter="fault">Fault reported</button>
+        </div>
+
+        <!-- FIXED ID HERE: Changed from station-grid to stations-list -->
+        <div class="station-grid" id="stations-list"></div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how" id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Reporting takes three steps</h2>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="step-num">01</span>
+            <h3>Spot the problem</h3>
+            <p>Cracked screen, dead connector, blocked bay, wrong pricing — whatever's stopping you from charging.</p>
+          </li>
+          <li>
+            <span class="step-num">02</span>
+            <h3>Report it in under a minute</h3>
+            <p>Pick the station, choose an issue type, add a photo if you can. No account required.</p>
+          </li>
+          <li>
+            <span class="step-num">03</span>
+            <h3>We flag it for other drivers</h3>
+            <p>The station status updates instantly, and repeat confirmations get it prioritized for a fix.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- REPORT FORM -->
+    <section class="report" id="report">
+      <div class="wrap report-inner">
+        <div class="section-head">
+          <h2>Report a charging problem</h2>
+          <p class="section-sub">Takes about a minute. You'll see it appear in the feed below.</p>
+        </div>
+
+        <form id="report-form" novalidate>
+          <div class="form-row">
+            <label for="station-name">Station name or address</label>
+            <input type="text" id="station-name" name="stationName" placeholder="e.g. Riverside Mall — Bay 3" required>
+          </div>
+
+          <div class="form-row form-row--split">
+            <div>
+              <label for="issue-type">Issue type</label>
+              <select id="issue-type" name="issueType" required>
+                <option value="" disabled selected>Select an issue</option>
+                <option value="Not charging">Connector won't charge</option>
+                <option value="Blocked bay">Bay blocked / ICEd</option>
+                <option value="Screen/payment">Screen or payment not working</option>
+                <option value="Damaged">Physically damaged</option>
+                <option value="Wrong info">Wrong listing info</option>
+                <option value="Other">Something else</option>
+              </select>
+            </div>
+            <div>
+              <label for="photo">Photo (optional)</label>
+              <input type="file" id="photo" name="photo" accept="image/*">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="issue-desc">What happened?</label>
+            <!-- FIXED ID HERE: Changed from description to issue-desc -->
+            <textarea id="issue-desc" name="description" rows="3"
+              placeholder="Screen shows an error code, connector won't latch, etc." required></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="reporter-name">Your name (optional)</label>
+            <input type="text" id="reporter-name" name="reporterName" placeholder="Stays anonymous if left blank">
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit report</button>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- RECENT REPORTS FEED -->
+    <section class="feed" id="feed">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Recent reports</h2>
+          <p class="section-sub">Live from drivers across the network.</p>
+        </div>
+        <!-- FIXED ID HERE: Changed from feed-list to reports-feed -->
+        <ul class="feed-list" id="reports-feed"></ul>
+      </div>
+    </section>
+
+<!-- admin stuff -->
+
+    <section class="admin-portal-section" id="admin-panel">
+      <div class="wrap">
+        <!-- Header -->
+        <div class="section-head"
+          style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+          <div>
+            <p class="eyebrow">Privileged Access</p>
+            <h2>Network Admin Console</h2>
+            <p class="section-sub">Manage network infrastructure, resolve driver fault reports, and override system
+              statuses.</p>
+          </div>
+          <span class="status status--available" id="admin-info"
+            style="border-color: var(--accent-volt); color: var(--accent-volt); background: rgba(255, 193, 69, 0.1);">
+            <span class="status-dot"
+              style="background: var(--accent-volt); box-shadow: 0 0 8px var(--accent-volt);"></span>
+            Admin: ${user.name || user.email}
+          </span>
+        </div>
+
+        <!-- Quick Stats Overview -->
+        <div class="admin-stats-grid">
+          <div class="panel">
+            <p class="panel-label">Total Stations</p>
+            <div class="panel-value" id="admin-stat-total">loading....</div>
+          </div>
+          <div class="panel">
+            <p class="panel-label">Pending Fault Reports</p>
+            <div class="panel-value panel-value--fault" id="admin-stat-faults">loading....</div>
+          </div>
+          <div class="panel">
+            <p class="panel-label">System Status</p>
+            <div class="panel-value panel-value--live" id="operationalPercentage" style="font-size: 1.2rem; margin-top: 6px;">loading....
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Split Grid -->
+        <div class="admin-grid">
+
+          <!-- Column 1: Add Station Form -->
+          <div class="admin-card">
+            <h3>Add New Charging Station</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Register a new physical
+              charger node directly into the live network map.</p>
+
+            <form id="admin-add-station-form" style="display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <label for="admin-station-name">Station Name</label>
+                <input type="text" id="admin-station-name" placeholder="e.g. Apex Central Supercharger" required>
+              </div>
+
+              <div>
+                <label for="admin-station-address">Location Address</label>
+                <input type="text" id="admin-station-address" placeholder="e.g. 452 Tech Parkway" required>
+              </div>
+
+              <div class="form-row--split" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                  <label for="admin-station-network">Network Provider</label>
+                  <input type="text" id="admin-station-network" value="Voltfix" required>
+                </div>
+                <div>
+                  <label for="admin-station-status">Initial Status</label>
+                  <select id="admin-station-status">
+                    <option value="available" selected>Available (Live)</option>
+                    <option value="in-use">In Use</option>
+                    <option value="fault">Fault / Maintenance</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label for="admin-station-connectors">Connectors (comma separated)</label>
+                <input type="text" id="admin-station-connectors" placeholder="CCS, Type 2, CHAdeMO" required>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="admin-add-btn" style="margin-top: 8px;">+ Add Station to
+                Network</button>
+              <p class="form-status" id="admin-form-status" aria-live="polite"></p>
+            </form>
+          </div>
+
+          <!-- Column 2: Fault Moderation Queue -->
+          <div class="admin-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+              <div>
+                <h3>Fault Moderation Queue</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Review user reports & adjust charger
+                  operational status.</p>
+              </div>
+              <span class="chip is-active" id="numberOfReports" style="font-size: 0.75rem; padding: 2px 10px;">loading....</span>
+            </div>
+
+            <div class="admin-queue-list" id="admin-queue-container">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© 2026 Voltfix. Not affiliated with any charging network.</span>
+      <span class="footer-links">
+        <a href="#top">Back to top</a>
+      </span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
