@@ -35,3 +35,4 @@ app.use(errorHandler);
         process.exit(1)
     }
 })();
+module.exports = app;

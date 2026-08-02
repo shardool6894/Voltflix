@@ -50,11 +50,17 @@ Make sure you have the following installed on your machine:
     Create a .env file in the root directory and add the following keys:
     ```
     Mongoose_URL = your_mongodb_connection_string
+<<<<<<< HEAD
 JWT_Secret = your_secret_jwt_key
 JWT_Refresh_Secret = your_refresh_secret_jwt_key
 COOKIE_PARSER_Secret = your_cookie_parser_secret
 NODE_ENV = your_node_env
 ADMIN_SECRET = your_admin_secret
+=======
+    JWT_Secret = your_secret_jwt_key
+    JWT_Refresh_Secret = your_refresh_secret_jwt_key
+    COOKIE_PARSER_Secret = your_cookie_parser_secret
+    NODE_ENV = your_node_env
     ```
 
    Note: Standard users are registered as drivers by default. To create an Admin account, a user must provide the exact ADMIN_SECRET during the registration process on the frontend.
