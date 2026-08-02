@@ -34,7 +34,7 @@ const updateReportStatus = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { stationStatus } = req.body;
-        const data = await updateReportStatusServices(req.user._id, req.params.id, stationStatus)
+        const data = await updateReportStatusServices(req.user.id, req.params.id, stationStatus)
         res.json({
             success: true,
             message: "Report resolved successfully",
@@ -47,7 +47,7 @@ const updateReportStatus = async (req, res, next) => {
 }
 const dismissReport = async (req, res, next) => {
     try {
-        await dismissReportServices()
+        await dismissReportServices(req.user.id, req.params.id);
         res.json({
             success: true,
             message: "Report dismissed"

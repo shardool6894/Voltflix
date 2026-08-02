@@ -1,4 +1,4 @@
-# Voltflix
+# Voltfix
 Voltfix is a community-driven reporting tool and management platform designed to keep Electric Vehicle (EV) charging networks online. Drivers can flag broken stations in seconds, while admins get a bird's-eye view to fix issues fast.
 ## Features:-
 
@@ -28,6 +28,7 @@ Voltfix is a community-driven reporting tool and management platform designed to
 * MongoDB (Database)
 * Multer (Image file uploads & static file serving)
 * JSON Web Tokens (JWT) for secure authentication
+* Express Rate Limit & Crypto for brute-force and timing-attack protection
 
 ## Getting Started:-
 
@@ -53,7 +54,10 @@ JWT_Secret = your_secret_jwt_key
 JWT_Refresh_Secret = your_refresh_secret_jwt_key
 COOKIE_PARSER_Secret = your_cookie_parser_secret
 NODE_ENV = your_node_env
+ADMIN_SECRET = your_admin_secret
     ```
+
+   Note: Standard users are registered as drivers by default. To create an Admin account, a user must provide the exact ADMIN_SECRET during the registration process on the frontend.
 
 3. Start the server:
 ```bash : npm run dev```

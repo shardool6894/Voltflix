@@ -40,17 +40,15 @@ const updateReportStatusServices = async (userid, reportid, stationStatus) => {
     );
     return report;
 }
-const dismissReportServices = async () => {
-    const report = await Report.findById(req.params.id);
+const dismissReportServices = async (userId, reportId) => {
+    const report = await issueReportModel.findById(reportId);
     if (!report) {
-        return res.status(404).json({
-            success: false,
-            message: "Report not found"
-        });
+        throw new Error('Report not found');
     }
     report.status = "closed";
     report.dismissedAt = new Date();
-    report.dismissedBy = req.user._id;
+    report.dismissedBy = userId;
     await report.save();
+    return report;
 }
 module.exports = { getAllReportsServices, createReportServices, updateReportStatusServices, dismissReportServices }

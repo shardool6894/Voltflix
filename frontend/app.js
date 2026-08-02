@@ -39,16 +39,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function checkAuthStatus() {
     const token = localStorage.getItem('voltfix_token');
-    const userData = localStorage.getItem('voltfix_user');
     const authBox = document.getElementById('auth-nav-box');
     const adminPanel = document.getElementById('admin-panel');
+
     if (adminPanel) {
-        adminPanel.style.display = "none";
+        adminPanel.style.display = 'none';
     }
-    if (!userData || !token) {
+
+    if (!token || !authBox) {
         return;
     }
-    const user = JSON.parse(userData);
+
+    let user;
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+            credentials: 'include',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            localStorage.removeItem('voltfix_token');
+            localStorage.removeItem('voltfix_user');
+            return;
+        }
+
+        const result = await response.json();
+        user = result.data;
+        localStorage.setItem('voltfix_user', JSON.stringify(user));
+    } catch (error) {
+        console.error('Auth verification failed:', error);
+        localStorage.removeItem('voltfix_token');
+        localStorage.removeItem('voltfix_user');
+        return;
+    }
 
     if (token && user && authBox) {
         if (user.role === 'admin') {
@@ -138,6 +163,7 @@ async function checkAuthStatus() {
 
             await fetch(`${API_BASE_URL}/reports/${reportId}/resolve`, {
                 method: "PATCH",
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
@@ -161,6 +187,7 @@ async function checkAuthStatus() {
 
             await fetch(`${API_BASE_URL}/reports/${reportId}/dismiss`, {
                 method: "PATCH",
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
@@ -227,6 +254,7 @@ function setupAdminForm(token) {
 
             const res = await fetch(`${API_BASE_URL}/stations/create`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -662,6 +690,7 @@ function initAuth() {
             try {
                 const res = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
@@ -692,7 +721,7 @@ function initAuth() {
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value;
-            const role = document.getElementById('reg-role').value;
+            const adminSecret = document.getElementById('reg-admin-secret').value.trim();
 
             if (!name || !email || !password) {
                 showStatus(regStatus, 'Please fill in all fields.', true);
@@ -705,8 +734,9 @@ function initAuth() {
             try {
                 const res = await fetch(`${API_BASE_URL}/auth/register`, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password, role })
+                    body: JSON.stringify({ name, email, password, adminSecret })
                 });
                 const data = await res.json();
 

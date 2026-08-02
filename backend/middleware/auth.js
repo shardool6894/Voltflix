@@ -1,22 +1,51 @@
-const dotenv = require('dotenv').config()
-const jwt = require('jsonwebtoken')
-const userModel = require('../models/users')
-const middleWareFn = (req, res, next) => {
+const dotenv = require('dotenv').config();
+const jwt = require('jsonwebtoken');
+
+const authenticate = (req, res, next) => {
     try {
-        const { refreshToken } = req.signedCookies
-        if(!refreshToken){
-            throw new Error(`invalid token`)
+        let decoded = null;
+
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.slice(7);
+            decoded = jwt.verify(token, process.env.JWT_Secret);
+        } else {
+            const { refreshToken } = req.signedCookies || {};
+            if (refreshToken) {
+                decoded = jwt.verify(refreshToken, process.env.JWT_Refresh_Secret);
+            }
         }
-        const decoded = jwt.verify(refreshToken, process.env.JWT_Refresh_Secret)
+
         if (!decoded) {
-            throw new Error(`invalid token`);
+            const err = new Error('Authentication required');
+            err.statusCode = 401;
+            throw err;
         }
-        console.log(decoded)
-        req.user = decoded;
+
+        req.user = {
+            id: decoded.id || decoded._id,
+            email: decoded.email,
+            role: decoded.role,
+        };
         next();
+    } catch (err) {
+        err.statusCode = err.statusCode || 401;
+        if (err.name === 'TokenExpiredError') {
+            err.message = 'Session expired';
+        } else if (!err.statusCode) {
+            err.message = 'Invalid token';
+        }
+        next(err);
     }
-    catch(err){
-        next(err)
+};
+
+const requireAdmin = (req, res, next) => {
+    if (!req.user || req.user.role !== 'admin') {
+        const err = new Error('Admin access required');
+        err.statusCode = 403;
+        return next(err);
     }
-}
-module.exports = { middleWareFn }
+    next();
+};
+
+module.exports = { middleWareFn: authenticate, authenticate, requireAdmin };

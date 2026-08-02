@@ -8,14 +8,16 @@ const { stationRouter } = require("./backend/routes/stations");
 const { reportRouter } = require("./backend/routes/reports");
 const { statRouter } = require("./backend/routes/stats");
 const { authRouter } = require('./backend/routes/auth')
+const { globalLimiter } = require('./backend/middleware/rateLimiter')
 const { errorHandler } = require('./backend/services/error')
 const dotenv = require('dotenv').config()
 
 app.use(cors());
 app.use(cookieParser(process.env.COOKIE_PARSER_Secret));
 app.use(express.json());
-app.use(express.static(path.resolve(__dirname,'frontend')))
+app.use(express.static(path.resolve(__dirname, 'frontend')))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api', globalLimiter)
 app.use("/api/stations", stationRouter);
 app.use("/api/reports", reportRouter);
 app.use("/api/stats", statRouter);

@@ -67,10 +67,6 @@ const returnFaultyStations = async (req, res, next) => {
 //admin only 
 const createStation = async (req, res, next) => {
     try {
-        const user = req.user
-        if (user.role !== "admin") {
-            throw new Error('forbidden')
-        }
         const data = await createStationServices(req.body)
         res.status(200).json({
             success: true,
@@ -84,10 +80,6 @@ const createStation = async (req, res, next) => {
 
 const updateStation = async (req, res, next) => {
     try {
-        const user = req.user
-        if (user.role !== "admin") {
-            throw new Error('forbidden')
-        }
         const data = await updateStationServices(req.params.id, req.body)
         res.status(200).json({
             success: true,
@@ -101,10 +93,6 @@ const updateStation = async (req, res, next) => {
 
 const deleteStation = async (req, res, next) => {
     try {
-        const user = req.user
-        if (user.role !== "admin") {
-            throw new Error('forbidden')
-        }
         const data = await deleteStationServices(req.params.id)
         res.status(200).json({
             success: true,

@@ -1,13 +1,34 @@
 const { userModel } = require('../models/users')
+const crypto = require('crypto')
+
 const registerServices = async (userData) => {
     const existingUser = await userModel.findByEmail(userData.email)
     if (existingUser) {
         throw new Error('email taken')
     }
-    const user = new userModel(userData)
+
+    const adminEmails = getAdminEmails();
+    const email = userData.email.trim().toLowerCase();
+    let role = 'driver'
+    if (userData.adminSecret && process.env.ADMIN_SECRET) {
+        const providedSecret = Buffer.from(userData.adminSecret);
+        const actualSecret = Buffer.from(process.env.ADMIN_SECRET);
+        if (providedSecret.length === actualSecret.length && 
+            crypto.timingSafeEqual(providedSecret, actualSecret)) {
+            role = 'admin';
+        }
+    }
+
+    const user = new userModel({
+        name: userData.name,
+        email,
+        password: userData.password,
+        role,
+    })
     await user.save()
     return user;
 }
+
 const loginServices = async (userData) => {
     const user = await userModel.findByEmail(userData.email)
     if (!user) {
@@ -33,6 +54,7 @@ const getProfileServices = async (userId) => {
 const updateProfileServices = async (userId, newData) => {
     delete newData.password;
     delete newData.email;
+    delete newData.role;
     const updatedUser = await userModel.findByIdAndUpdate(userId, {
         $set: newData
     },
