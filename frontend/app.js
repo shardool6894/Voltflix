@@ -1,5 +1,7 @@
 // --- Configuration ---
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000/api'
+    : '/api';
 const MAX_DISTANCE_METERS = 15000;
 
 // --- DOM Elements ---
@@ -432,7 +434,9 @@ async function fetchReports() {
 }
 
 function renderReports(reports) {
-    const backendUrl = 'http://localhost:5000';
+    const backendUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:5000'
+        : '';
     domElements.reportsFeed.innerHTML = '';
 
     if (reports.length === 0) {
