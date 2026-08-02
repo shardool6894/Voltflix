@@ -49,10 +49,10 @@ Make sure you have the following installed on your machine:
     Create a .env file in the root directory and add the following keys:
     ```
     Mongoose_URL = your_mongodb_connection_string
-JWT_Secret = your_secret_jwt_key
-JWT_Refresh_Secret = your_refresh_secret_jwt_key
-COOKIE_PARSER_Secret = your_cookie_parser_secret
-NODE_ENV = your_node_env
+    JWT_Secret = your_secret_jwt_key
+    JWT_Refresh_Secret = your_refresh_secret_jwt_key
+    COOKIE_PARSER_Secret = your_cookie_parser_secret
+    NODE_ENV = your_node_env
     ```
 
 3. Start the server:
